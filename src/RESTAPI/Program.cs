@@ -1,5 +1,6 @@
-using QuizGame.Services;
+﻿using QuizGame.Services;
 using System.Reflection;
+using System.Text.Json;
 
 namespace RESTAPI
 {
@@ -7,77 +8,28 @@ namespace RESTAPI
     {
         public static void Main(string[] args)
         {
-            var MyAllowSpecificOrigins = "allowAll";
-            var builder = WebApplication.CreateBuilder(args);
+            CreateHostBuilder(args).Build().Run();
+        }
 
-            // Add services to the container.
-            builder.Services.AddSingleton<IQuizServices, QuizServices>();
-            builder.Services.AddControllers(options =>
-            {
-                //options.ReturnHttpNotAcceptable = true;
-            }).AddNewtonsoftJson();
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(setupAction =>
-            {
-
-                //setupAction.SwaggerDoc("RestAPISpecification", new()
-                //{
-                //    Title = "RESTAPI",
-                //    Version = "v1"
-                //});
-
-                var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
-
-                setupAction.IncludeXmlComments(xmlCommentsFullPath);
-            });
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy(
-                                name: MyAllowSpecificOrigins,
-                                builder =>
-                                {
-                                    builder.WithOrigins("http://127.0.0.1:5500")
-                                            .AllowAnyMethod()
-                                            .AllowAnyHeader();
-                                   
-                                });
-            });
-
-            var app = builder.Build();
-
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler(appBuilder => 
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    appBuilder.Run(async context =>
-                    {
-                        context.Response.StatusCode = 500;
-                        await context.Response.WriteAsync("Something went wrong.");
-                    });
-                });
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseCors(MyAllowSpecificOrigins);
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-
-            app.Run();
+                    string? env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                    webBuilder.UseStartup<Startup>();
+                    webBuilder.ConfigureAppConfiguration(config =>
+                    config
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile($"appsettings.{env}.json", optional: true)
+                        .AddEnvironmentVariables());
+                })
+                .ConfigureLogging(builder => builder.AddJsonConsole(options =>
+                {
+                    options.IncludeScopes = true;
+                    options.TimestampFormat = "hh:mm:ss ";
+                    options.JsonWriterOptions = new JsonWriterOptions { Indented = true, };
+                }));
         }
     }
 }
