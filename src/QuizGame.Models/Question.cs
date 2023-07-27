@@ -16,7 +16,7 @@ namespace QuizGame.Models
         public string CorrectAnswer { get; set; }
         [Range(0, int.MaxValue, ErrorMessage = "Please enter a value bigger than {0}")]
         public int Score { get; set; }
-        public Guid QuizAssigned { get; set; }
+        public Guid? QuizAssigned { get; set; }
 
         public Question(Guid id, string text, string correctAnswer, int score)
         {
