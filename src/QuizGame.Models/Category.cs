@@ -10,7 +10,20 @@ namespace QuizGame.Models
     public class Category
     {
         public Guid Id { get; set; }
-        [Required(ErrorMessage = "You should provide a name value.")]
         public string Name { get; set; }
+
+        public Category(Guid id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        public Category(string name)
+        {
+            Id = Guid.NewGuid();
+            Name = name;
+        }
+
+        public Category() { }
     }
 }

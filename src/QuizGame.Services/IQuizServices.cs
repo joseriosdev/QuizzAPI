@@ -16,11 +16,16 @@ namespace QuizGame.Services
         public Question GetQuestion(Guid id);
         public Question AddQuestion(Question question);
         public bool RemoveQuestion(Guid id);
+        public Question UpdateQuestion(Guid id, Question question);
 
         public Quiz GetQuiz(Guid id);
         public Quiz AddQuiz(QuizDTO quiz);
         public bool RemoveQuiz(Guid id);
-
         public Quiz UpdateQuiz(Guid id, QuizDTO quiz);
+
+        public Category GetCategory(Guid id);
+        public Category AddCategory(CategoryDTO category);
+        public bool RemoveCategory(Guid id);
+        public Category UpdateCategory(Guid id, CategoryDTO category);
     }
 }
