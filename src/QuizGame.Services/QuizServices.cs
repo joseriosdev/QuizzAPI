@@ -33,15 +33,41 @@ namespace QuizGame.Services
         }
         
         public bool RemoveQuestion(Guid id) 
-        {  
+        {
             Question question = GetQuestion(id);
-            _db._questions.Remove(question); 
+            _db._questions.Remove(question);
+            List<Quiz> quizzes = GenerateQuizzes().Where(quiz => quiz.questions.Any(question => question.Id == id)).ToList();
+            if (quizzes.Count > 0)
+            {
+                foreach (Quiz quiz in quizzes)
+                {
+                    quiz.questions.RemoveAll(obj => obj.Id == id);
+                    QuizDTO quizToUpdate = parser.ParseToQuizDTO(quiz);
+                    UpdateQuiz(quiz.Id, quizToUpdate);
+                }
+            }
             return true;
         }
 
         public Question UpdateQuestion(Guid id, Question question)
         {
-            throw new NotImplementedException();
+            Question currentQuestion = GetQuestion(id);
+            _db._questions.Remove(currentQuestion);
+            _db._questions.Add(question);
+            List<Quiz> quizzes = GenerateQuizzes().Where(quiz => quiz.questions.Any(questionToUpdate => questionToUpdate.Id == id)).ToList();
+            if (quizzes.Count > 0)
+            {
+                foreach (Quiz quiz in quizzes)
+                {
+                    quiz.questions.RemoveAll(obj => obj.Id == id);
+                    List<Question> newQuestions = new List<Question>(quiz.questions);
+                    newQuestions.Add(question);
+                    quiz.questions = newQuestions;
+                    QuizDTO quizToUpdate = parser.ParseToQuizDTO(quiz);
+                    UpdateQuiz(quiz.Id, quizToUpdate);
+                }
+            }
+            return question;
         }
 
         //QUIZZES

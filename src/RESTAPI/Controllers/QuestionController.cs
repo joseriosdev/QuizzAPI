@@ -23,9 +23,10 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpGet]
-        public List<Question> GetQuestions()
+        public async Task<IActionResult> GetQuestions()
         {
-            return _services.GenerateQuestions();
+            await Task.Delay(1000);
+            return Ok(_services.GenerateQuestions());
         }
 
         /// <summary>
@@ -36,9 +37,10 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpGet("{id}")]
-        public Question GetQuestion(Guid id)
+        public async Task<IActionResult> GetQuestion(Guid id)
         {
-            return _services.GetQuestion(id);
+            await Task.Delay(1000);
+            return Ok(_services.GetQuestion(id));
         }
 
         /// <summary>
@@ -49,9 +51,10 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpPost]
-        public Question PostQuestion(Question question)
+        public async Task<IActionResult> PostQuestion(Question question)
         {
-            return _services.AddQuestion(question);
+            await Task.Delay(1000);
+            return Ok(_services.AddQuestion(question));
         }
 
         /// <summary>
@@ -61,9 +64,23 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpDelete]
-        public void DeleteQuestion(Guid id) 
+        public async Task DeleteQuestion(Guid id) 
         {
+            await Task.Delay(1000);
             _services.RemoveQuestion(id);
+        }
+
+        /// <summary>
+        /// Update a question from the database
+        /// </summary>
+        /// <param name="id">A question id</param>
+        /// <response code="200">Success response</response>
+        /// <response code="400">Bad request response</response>
+        [HttpPut("{idToUpdate}")]
+        public async Task UpdateQuestion(Guid idToUpdate, [FromBody] Question question)
+        {
+             await Task.Delay(1000);
+            _services.UpdateQuestion(idToUpdate, question);
         }
 
     }
