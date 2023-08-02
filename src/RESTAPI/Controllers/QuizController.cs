@@ -26,7 +26,7 @@ namespace RESTAPI.Controllers
         [HttpGet]
         public List<Quiz> GetQuizzes()
         {
-            return _services.GenerateQuizzes();
+            return _services.GenerateQuizzesAsync();
         }
 
         /// <summary>
@@ -37,9 +37,9 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpGet("{id}")]
-        public Quiz GetQuiz(Guid id)
+        public async Task<Quiz> GetQuiz(Guid id)
         {
-            return _services.GetQuiz(id);
+            return await _services.GetQuizAsync(id);
         }
 
         /// <summary>
@@ -50,9 +50,9 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpPost]
-        public Quiz PostQuestion([FromBody] QuizDTO quiz)
+        public async Task<Quiz> PostQuestion([FromBody] QuizDTO quiz)
         {
-            return _services.AddQuiz(quiz);
+            return await _services.AddQuizAsync(quiz);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace RESTAPI.Controllers
         [HttpDelete("{idToDelete}")]
         public void DeleteQuiz(Guid idToDelete)
         {
-            _services.RemoveQuiz(idToDelete);
+            _services.RemoveQuizAsync(idToDelete);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace RESTAPI.Controllers
         [HttpPut("{idToUpdate}")]
         public void UpdateQuiz(Guid idToUpdate, [FromBody] QuizDTO quiz)
         {
-            _services.UpdateQuiz(idToUpdate, quiz);
+            _services.UpdateQuizAsync(idToUpdate, quiz);
         }
     }
 }

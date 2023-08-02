@@ -10,22 +10,23 @@ namespace QuizGame.Services
 {
     public interface IQuizServices
     {
-        List<Question> GenerateQuestions();
-        List<Category> GenerateCategories();
-        List<Quiz> GenerateQuizzes();
-        public Question GetQuestion(Guid id);
-        public Question AddQuestion(Question question);
-        public bool RemoveQuestion(Guid id);
-        public Question UpdateQuestion(Guid id, Question question);
+        List<Question> GenerateQuestionsAsync();
+        Task<IEnumerable<Category>> GenerateCategoriesAsync();
+        List<Quiz> GenerateQuizzesAsync();
 
-        public Quiz GetQuiz(Guid id);
-        public Quiz AddQuiz(QuizDTO quiz);
-        public bool RemoveQuiz(Guid id);
-        public Quiz UpdateQuiz(Guid id, QuizDTO quiz);
+        Task<Question> GetQuestionAsync(Guid id);
+        Task<Question> AddQuestionAsync(Question question);
+        Task<bool> RemoveQuestionAsync(Guid id);
+        Task<Question> UpdateQuestionAsync(Guid id, Question question);
 
-        public Category GetCategory(Guid id);
-        public Category AddCategory(CategoryDTO category);
-        public bool RemoveCategory(Guid id);
-        public Category UpdateCategory(Guid id, CategoryDTO category);
+        Task<Quiz> GetQuizAsync(Guid id);
+        Task<Quiz> AddQuizAsync(QuizDTO quiz);
+        Task<bool> RemoveQuizAsync(Guid id);
+        Task<Quiz> UpdateQuizAsync(Guid id, QuizDTO quiz);
+
+        Task<Category> GetCategoryAsync(Guid id);
+        Task<Category> AddCategoryAsync(CategoryDTO category);
+        Task<bool> RemoveCategoryAsync(Guid id);
+        Task<Category> UpdateCategoryAsync(Guid id, CategoryDTO category);
     }
 }

@@ -10,10 +10,12 @@ namespace RESTAPI.Controllers
     public class QuestionController : ControllerBase
     {
         private readonly IQuizServices _services;
+        private readonly ILogger<QuestionController> _logger;
 
-        public QuestionController(IQuizServices services)
+        public QuestionController(IQuizServices services, ILogger<QuestionController> log)
         {
             _services = services ?? throw new ArgumentNullException(nameof(services));
+            _logger = log;
         }
 
         /// <summary>
@@ -23,10 +25,9 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpGet]
-        public async Task<IActionResult> GetQuestions()
+        public List<Question> GetQuestions()
         {
-            await Task.Delay(1000);
-            return Ok(_services.GenerateQuestions());
+            return _services.GenerateQuestionsAsync();
         }
 
         /// <summary>
@@ -39,8 +40,8 @@ namespace RESTAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetQuestion(Guid id)
         {
-            await Task.Delay(1000);
-            return Ok(_services.GetQuestion(id));
+            var question = await _services.GetQuestionAsync(id);
+            return Ok(question);
         }
 
         /// <summary>
@@ -53,8 +54,8 @@ namespace RESTAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> PostQuestion(Question question)
         {
-            await Task.Delay(1000);
-            return Ok(_services.AddQuestion(question));
+            var result = await _services.AddQuestionAsync(question);
+            return Ok(result);
         }
 
         /// <summary>
@@ -66,8 +67,7 @@ namespace RESTAPI.Controllers
         [HttpDelete]
         public async Task DeleteQuestion(Guid id) 
         {
-            await Task.Delay(1000);
-            _services.RemoveQuestion(id);
+            await _services.RemoveQuestionAsync(id);
         }
 
         /// <summary>
@@ -79,8 +79,7 @@ namespace RESTAPI.Controllers
         [HttpPut("{idToUpdate}")]
         public async Task UpdateQuestion(Guid idToUpdate, [FromBody] Question question)
         {
-             await Task.Delay(1000);
-            _services.UpdateQuestion(idToUpdate, question);
+            await _services.UpdateQuestionAsync(idToUpdate, question);
         }
 
     }

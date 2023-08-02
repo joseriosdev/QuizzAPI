@@ -9,52 +9,56 @@ namespace QuizGame.Services
     {
         public DB_Fake _db = new DB_Fake();
         public Parser parser = new Parser();
-        public List<Category> GenerateCategories()
+        public async Task<IEnumerable<Category>> GenerateCategoriesAsync()
         {
             return _db._categories;
         }
 
         //QUESTIONS
 
-        public List<Question> GenerateQuestions()
+        public List<Question> GenerateQuestionsAsync()
         {
             return _db._questions;
         }
 
-        public Question GetQuestion(Guid id)
+        public async Task<Question> GetQuestionAsync(Guid id)
         {
-            return _db._questions.Where(questions => questions.Id == id).FirstOrDefault();
+            await Task.Delay(10);
+            var question = _db._questions.Where(questions => questions.Id == id).FirstOrDefault();
+            return question;
         }
 
-        public Question AddQuestion(Question question)
+        public async Task<Question> AddQuestionAsync(Question question)
         {
             _db._questions.Add(question);
+            await Task.Delay(10);
             return question;
         }
         
-        public bool RemoveQuestion(Guid id) 
+        public async Task<bool> RemoveQuestionAsync(Guid id) 
         {
-            Question question = GetQuestion(id);
+            Question question = await GetQuestionAsync(id);
             _db._questions.Remove(question);
-            List<Quiz> quizzes = GenerateQuizzes().Where(quiz => quiz.questions.Any(question => question.Id == id)).ToList();
+            List<Quiz> quizzes = GenerateQuizzesAsync().Where(quiz => quiz.questions.Any(question => question.Id == id)).ToList();
             if (quizzes.Count > 0)
             {
                 foreach (Quiz quiz in quizzes)
                 {
                     quiz.questions.RemoveAll(obj => obj.Id == id);
                     QuizDTO quizToUpdate = parser.ParseToQuizDTO(quiz);
-                    UpdateQuiz(quiz.Id, quizToUpdate);
+                    UpdateQuizAsync(quiz.Id, quizToUpdate);
                 }
             }
+            await Task.Delay(10);
             return true;
         }
 
-        public Question UpdateQuestion(Guid id, Question question)
+        public async Task<Question> UpdateQuestionAsync(Guid id, Question question)
         {
-            Question currentQuestion = GetQuestion(id);
+            Question currentQuestion = await GetQuestionAsync(id);
             _db._questions.Remove(currentQuestion);
             _db._questions.Add(question);
-            List<Quiz> quizzes = GenerateQuizzes().Where(quiz => quiz.questions.Any(questionToUpdate => questionToUpdate.Id == id)).ToList();
+            List<Quiz> quizzes = GenerateQuizzesAsync().Where(quiz => quiz.questions.Any(questionToUpdate => questionToUpdate.Id == id)).ToList();
             if (quizzes.Count > 0)
             {
                 foreach (Quiz quiz in quizzes)
@@ -64,94 +68,100 @@ namespace QuizGame.Services
                     newQuestions.Add(question);
                     quiz.questions = newQuestions;
                     QuizDTO quizToUpdate = parser.ParseToQuizDTO(quiz);
-                    UpdateQuiz(quiz.Id, quizToUpdate);
+                    UpdateQuizAsync(quiz.Id, quizToUpdate);
                 }
             }
+            await Task.Delay(10);
             return question;
         }
 
         //QUIZZES
 
-        public List<Quiz> GenerateQuizzes()
+        public List<Quiz> GenerateQuizzesAsync()
         {
             return _db._quizzes;
         }
 
-        public Quiz GetQuiz(Guid id)
+        public async Task<Quiz> GetQuizAsync(Guid id)
         {
+            await Task.Delay(10);
             return _db._quizzes.Where(quizzes => quizzes.Id == id).FirstOrDefault();
         }
 
-        public Quiz AddQuiz(QuizDTO quiz)
+        public async Task<Quiz> AddQuizAsync(QuizDTO quiz)
         {
             Quiz quizToAdd = parser.ParseToQuiz(quiz);
             _db._quizzes.Add(quizToAdd);
+            await Task.Delay(10);
             return quizToAdd;
         }
 
-        public bool RemoveQuiz(Guid id)
+        public async Task<bool> RemoveQuizAsync(Guid id)
         {
-            Quiz quiz = GetQuiz(id);
+            Quiz quiz = await GetQuizAsync(id);
             _db._quizzes.Remove(quiz);
-            List<Question> questions = GenerateQuestions().Where(question => question.QuizAssigned == id).ToList();
+            List<Question> questions = GenerateQuestionsAsync().Where(question => question.QuizAssigned == id).ToList();
             if (questions.Count > 0)
             {
                 foreach (Question question in questions)
                 {
                     question.QuizAssigned = null;
-                    RemoveQuestion(question.Id);
-                    AddQuestion(question);
+                    RemoveQuestionAsync(question.Id);
+                    AddQuestionAsync(question);
                 }
             }
             return true;
         }
 
-        public Quiz UpdateQuiz(Guid id, QuizDTO quiz)
+        public async Task<Quiz> UpdateQuizAsync(Guid id, QuizDTO quiz)
         {
-            RemoveQuiz(id);
+            RemoveQuizAsync(id);
             Quiz quizToAdd = parser.ParseToQuiz(quiz);
             _db._quizzes.Add(quizToAdd);
+            await Task.Delay(10);
             return quizToAdd;
         }
 
         //CATEGORIES
 
-        public Category GetCategory(Guid id)
+        public async Task<Category> GetCategoryAsync(Guid id)
         {
+            await Task.Delay(10);
             return _db._categories.Where(categories => categories.Id == id).FirstOrDefault();
         }
 
-        public Category AddCategory(CategoryDTO category)
+        public async Task<Category> AddCategoryAsync(CategoryDTO category)
         {
             Category categoryToAdd = parser.ParseToCategory(category);
             _db._categories.Add(categoryToAdd);
+            await Task.Delay(10);
             return categoryToAdd;
         }
 
-        public bool RemoveCategory(Guid id)
+        public async Task<bool> RemoveCategoryAsync(Guid id)
         {
-            Category category = GetCategory(id);
+            Category category = await GetCategoryAsync(id);
             _db._categories.Remove(category);
-            List<Quiz> quizzes = GenerateQuizzes().Where(quiz => quiz.Categories.Any(categoryToUpdate => categoryToUpdate.Id == id)).ToList();
+            List<Quiz> quizzes = GenerateQuizzesAsync().Where(quiz => quiz.Categories.Any(categoryToUpdate => categoryToUpdate.Id == id)).ToList();
             if (quizzes.Count > 0)
             {
                 foreach (Quiz quiz in quizzes)
                 {
                     quiz.Categories.RemoveAll(obj => obj.Id == id);
                     QuizDTO quizToUpdate = parser.ParseToQuizDTO(quiz);
-                    UpdateQuiz(quiz.Id, quizToUpdate);
+                    UpdateQuizAsync(quiz.Id, quizToUpdate);
                 }
             }
             return true;
         }
 
-        public Category UpdateCategory(Guid id, CategoryDTO category)
+        public async Task<Category> UpdateCategoryAsync(Guid id, CategoryDTO category)
         {
-            Category currentCategory = GetCategory(id);
+            Category currentCategory = await GetCategoryAsync(id);
             _db._categories.Remove(currentCategory);
             Category categoryToUpdate = parser.ParseToCategory(category);
             _db._categories.Add(categoryToUpdate);
-            List<Quiz> quizzes = GenerateQuizzes().Where(quiz => quiz.Categories.Any(categoryToUpdate => categoryToUpdate.Id == id)).ToList();
+            List<Quiz> quizzes = GenerateQuizzesAsync().Where(quiz => quiz.Categories.Any(categoryToUpdate => categoryToUpdate.Id == id)).ToList();
             if (quizzes.Count > 0)
             {
                 foreach (Quiz quiz in quizzes)
@@ -161,7 +171,7 @@ namespace QuizGame.Services
                     newCategories.Add(categoryToUpdate);
                     quiz.Categories = newCategories;
                     QuizDTO quizToUpdate = parser.ParseToQuizDTO(quiz);
-                    UpdateQuiz(quiz.Id, quizToUpdate);
+                    UpdateQuizAsync(quiz.Id, quizToUpdate);
                 }
             }
             return categoryToUpdate;

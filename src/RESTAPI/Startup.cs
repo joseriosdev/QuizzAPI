@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using QuizGame.Services;
 using RESTAPI.CustomMiddlewares;
+using Serilog;
 using System.Reflection;
+using System.Text;
 
 namespace RESTAPI
 {
@@ -22,6 +25,8 @@ namespace RESTAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            
+
             services.AddResponseCompression(options =>
             {
                 options.EnableForHttps = true;
@@ -43,7 +48,41 @@ namespace RESTAPI
 
                 string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+                c.AddSecurityDefinition("QuizzApiSecurity", new OpenApiSecurityScheme()
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    Description = "Input a valid token to access this API"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "QuizzApiSecurity" }
+                            }, new List<string>() }
+                    });
             });
+
+            services.AddAuthentication("Bearer")
+            .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Authentication:Issuer"],
+                        ValidAudience = Configuration["Authentication:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.ASCII.GetBytes(Configuration["Authentication:SecretForKey"]))
+                    };
+                }
+                );
 
             services.AddHttpClient();
 
@@ -94,18 +133,16 @@ namespace RESTAPI
 
             app.UseResponseCompression();
             app.UseRouting();
+            app.UseAuthorization();
+            app.UseAuthentication();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("/health");
             });
 
-            /*app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });*/
+            
+            
             app.UseMiddleware<LoggerMiddleware>();
         }
 

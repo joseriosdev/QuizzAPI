@@ -1,4 +1,5 @@
 ﻿using QuizGame.Services;
+using Serilog;
 using System.Reflection;
 using System.Text.Json;
 
@@ -13,7 +14,12 @@ namespace RESTAPI
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            return Host.CreateDefaultBuilder(args)
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File("logs/LoggerTest.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+            
+            var host =  Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     string? env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -30,6 +36,7 @@ namespace RESTAPI
                     options.TimestampFormat = "hh:mm:ss ";
                     options.JsonWriterOptions = new JsonWriterOptions { Indented = true, };
                 }));
+            return host;
         }
     }
 }

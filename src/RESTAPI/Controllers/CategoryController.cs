@@ -2,9 +2,12 @@
 using QuizGame.Models.DTOs;
 using QuizGame.Models;
 using QuizGame.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace RESTAPI.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController
@@ -23,9 +26,10 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpGet]
-        public List<Category> GetCategories()
+        public async Task<IEnumerable<Category>> GetCategories()
         {
-            return _services.GenerateCategories();
+            var categories = await _services.GenerateCategoriesAsync();
+            return categories;
         }
 
         /// <summary>
@@ -36,9 +40,9 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpGet("{id}")]
-        public Category GetCategory(Guid id)
+        public async Task<Category> GetCategory(Guid id)
         {
-            return _services.GetCategory(id);
+            return await _services.GetCategoryAsync(id);
         }
 
         /// <summary>
@@ -49,9 +53,9 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpPost]
-        public Category PostCategory(CategoryDTO category)
+        public async Task<Category> PostCategory(CategoryDTO category)
         {
-            return _services.AddCategory(category);
+            return await _services.AddCategoryAsync(category);
         }
 
         /// <summary>
@@ -63,7 +67,7 @@ namespace RESTAPI.Controllers
         [HttpDelete]
         public void DeleteCategory(Guid id)
         {
-            _services.RemoveCategory(id);
+            _services.RemoveCategoryAsync(id);
         }
 
         /// <summary>
@@ -75,7 +79,7 @@ namespace RESTAPI.Controllers
         [HttpPut("{idToUpdate}")]
         public void UpdateCategory(Guid idToUpdate, [FromBody] CategoryDTO category)
         {
-            _services.UpdateCategory(idToUpdate, category);
+            _services.UpdateCategoryAsync(idToUpdate, category);
         }
 
     }
