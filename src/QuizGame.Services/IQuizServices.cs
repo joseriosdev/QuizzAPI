@@ -24,6 +24,7 @@ namespace QuizGame.Services
         Task<bool> RemoveQuizAsync(Guid id);
         Task<Quiz> UpdateQuizAsync(Guid id, QuizDTO quiz);
         Task<IEnumerable<Quiz>> HandlePaginationAsync(int page, int pageSize);
+        Task<IEnumerable<Quiz>> QuizSearcherByNameAsync(string name);
 
         Task<Category> GetCategoryAsync(Guid id);
         Task<Category> AddCategoryAsync(CategoryDTO category);

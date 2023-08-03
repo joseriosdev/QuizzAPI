@@ -143,6 +143,13 @@ namespace QuizGame.Services
             return itemsInPage;
         }
 
+        public async Task<IEnumerable<Quiz>> QuizSearcherByNameAsync(string name)
+        {
+            IEnumerable<Quiz> result = _db._quizzes.Where(quiz => quiz.QuizName.Contains(name));
+            await Task.Delay(10);
+            return result;
+        }
+
         //CATEGORIES
 
         public async Task<Category> GetCategoryAsync(Guid id)

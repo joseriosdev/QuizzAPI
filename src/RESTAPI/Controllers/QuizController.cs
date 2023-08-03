@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using QuizGame.Models;
 using QuizGame.Models.DTOs;
 using QuizGame.Services;
@@ -107,6 +108,26 @@ namespace RESTAPI.Controllers
             {
                 return NotFound(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Searcher (base on name)
+        /// </summary>
+        /// <param searchText="searchText">The text to search the name of the quiz or quizes</param>
+        /// <response code="200">Success response</response>
+        /// <response code="204">If nothing is found</response>
+        /// <response code="400">Bad request response</response>
+        [HttpGet("search/{searchText}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Quiz>))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SearchQuizesByName(string searchText)
+        {
+            if (searchText.IsNullOrEmpty())
+                return BadRequest("Null or empty");
+
+            var result = await _services.QuizSearcherByNameAsync(searchText);
+            return result.Count() != 0 ? Ok(result) : NoContent();
         }
     }
 }
