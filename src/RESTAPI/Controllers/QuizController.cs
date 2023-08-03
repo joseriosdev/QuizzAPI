@@ -62,9 +62,9 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpDelete("{idToDelete}")]
-        public void DeleteQuiz(Guid idToDelete)
+        public async Task DeleteQuiz(Guid idToDelete)
         {
-            _services.RemoveQuizAsync(idToDelete);
+            await _services.RemoveQuizAsync(idToDelete);
         }
 
         /// <summary>
@@ -77,6 +77,36 @@ namespace RESTAPI.Controllers
         public void UpdateQuiz(Guid idToUpdate, [FromBody] QuizDTO quiz)
         {
             _services.UpdateQuizAsync(idToUpdate, quiz);
+        }
+
+        /// <summary>
+        /// Handles Pagination
+        /// </summary>
+        /// <param page="page">The current page</param>
+        /// <param pageSize="pageSize">The number of items to show per page</param>
+        /// <response code="200">Success response</response>
+        /// <response code="400">Bad request response</response>
+        /// <response code="404">Not Found response</response>
+        [HttpGet("{page}/{pageSize}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Quiz>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        public async Task<IActionResult> GetPaginationQuiz(int page, int pageSize)
+        {
+            if (page <= 0)
+            {
+                return BadRequest("The current page should be 1 or greater");
+            }
+
+            try
+            {
+                var res = await _services.HandlePaginationAsync(page, pageSize);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

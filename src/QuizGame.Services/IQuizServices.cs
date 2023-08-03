@@ -23,6 +23,7 @@ namespace QuizGame.Services
         Task<Quiz> AddQuizAsync(QuizDTO quiz);
         Task<bool> RemoveQuizAsync(Guid id);
         Task<Quiz> UpdateQuizAsync(Guid id, QuizDTO quiz);
+        Task<IEnumerable<Quiz>> HandlePaginationAsync(int page, int pageSize);
 
         Task<Category> GetCategoryAsync(Guid id);
         Task<Category> AddCategoryAsync(CategoryDTO category);

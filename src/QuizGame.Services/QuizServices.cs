@@ -122,6 +122,27 @@ namespace QuizGame.Services
             return quizToAdd;
         }
 
+        public async Task<IEnumerable<Quiz>> HandlePaginationAsync(int page, int pageSize)
+        {
+            await Task.Delay(10);
+            int currentQuizCountInDB = _db._quizzes.Count;
+            int maxNumberOfPages = (int)Math.Ceiling((decimal)currentQuizCountInDB / (decimal)pageSize);
+            
+            if(maxNumberOfPages == 1)
+            {
+                return _db._quizzes;
+            }
+
+            IEnumerable<Quiz> itemsInPage = _db._quizzes
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).ToList();
+
+            if (itemsInPage.Count() == 0)
+                throw new Exception("Not Found");
+
+            return itemsInPage;
+        }
+
         //CATEGORIES
 
         public async Task<Category> GetCategoryAsync(Guid id)

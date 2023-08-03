@@ -38,6 +38,9 @@ namespace QuizGame.DB
 
         public List<Quiz> _quizzes = new List<Quiz>
             {
+            new Quiz(), new Quiz(), new Quiz(),
+            new Quiz(), new Quiz(), new Quiz(),
+            new Quiz(), new Quiz(), new Quiz(),
             new Quiz(
                 guid1,
                 "World War II Quizz",
