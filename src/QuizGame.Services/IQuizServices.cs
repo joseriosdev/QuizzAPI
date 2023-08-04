@@ -15,18 +15,15 @@ namespace QuizGame.Services
         Task<IEnumerable<Category>> GenerateCategoriesAsync();
         List<Quiz> GenerateQuizzesAsync();
 
-        Task<Question> GetQuestionAsync(Guid id);
+        Task<Question> GetQuestionAsync(Guid? id);
         Task<Question> AddQuestionAsync(Question question);
         Task<bool> RemoveQuestionAsync(Guid id);
         Task<Question> UpdateQuestionAsync(Guid id, Question question);
 
-        Task<Quiz> GetQuizAsync(Guid id);
+        Task<Quiz> GetQuizAsync(Guid? id);
         Task<Quiz> AddQuizAsync(QuizDTO quiz);
         Task<bool> RemoveQuizAsync(Guid id);
         Task<Quiz> UpdateQuizAsync(Guid id, QuizDTO quiz);
-        Task<IEnumerable<Quiz>> HandlePaginationAsync(int page, int pageSize);
-        Task<IEnumerable<Quiz>> QuizSearcherByNameAsync(string name);
-        Task<IEnumerable<Quiz>> FilterQuizesByCategoriesAsync(params string[] categories);
         Task<(IEnumerable<Quiz>, PaginationMetadata)> GetQuizesAsync(
             string[] categories,
             string? searchText,

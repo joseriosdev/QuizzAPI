@@ -13,6 +13,7 @@ namespace QuizGame.Services
         public Parser parser = new Parser();
         public async Task<IEnumerable<Category>> GenerateCategoriesAsync()
         {
+            await Task.Delay(10);
             return _db._categories;
         }
 
@@ -23,7 +24,7 @@ namespace QuizGame.Services
             return _db._questions;
         }
 
-        public async Task<Question> GetQuestionAsync(Guid id)
+        public async Task<Question?> GetQuestionAsync(Guid? id)
         {
             await Task.Delay(10);
             var question = _db._questions.Where(questions => questions.Id == id).FirstOrDefault();
@@ -84,14 +85,16 @@ namespace QuizGame.Services
             return _db._quizzes;
         }
 
-        public async Task<Quiz> GetQuizAsync(Guid id)
+        public async Task<Quiz?> GetQuizAsync(Guid? id)
         {
             await Task.Delay(10);
-            return _db._quizzes.Where(quizzes => quizzes.Id == id).FirstOrDefault();
+            Quiz? result = _db._quizzes.Where(quizzes => quizzes.Id == id).FirstOrDefault();
+            return result;
         }
 
         public async Task<Quiz> AddQuizAsync(QuizDTO quiz)
         {
+            quiz.Id = Guid.NewGuid().ToString();
             Quiz quizToAdd = parser.ParseToQuiz(quiz);
             _db._quizzes.Add(quizToAdd);
             await Task.Delay(10);
@@ -163,10 +166,10 @@ namespace QuizGame.Services
         }
 
         public async Task<(IEnumerable<Quiz>, PaginationMetadata)> GetQuizesAsync(
-            string[] categories,
+            string[]? categories,
             string? searchText,
             int currentPage = 1,
-            int itemsPerPage = 2
+            int itemsPerPage = 50
             )
         {
             await Task.Delay(10);
@@ -176,7 +179,7 @@ namespace QuizGame.Services
                 searchText = searchText.Trim();
                 result = result.Where(q => q.QuizName == searchText);
             }
-            if(categories.Length > 0)
+            if(categories is not null && categories.Length > 0)
             {
                 result = result
                 .Where(q => q.Categories
