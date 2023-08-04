@@ -1,5 +1,6 @@
 ﻿using QuizGame.Models;
 using QuizGame.Models.DTOs;
+using QuizGame.Models.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,13 @@ namespace QuizGame.Services
         Task<Quiz> UpdateQuizAsync(Guid id, QuizDTO quiz);
         Task<IEnumerable<Quiz>> HandlePaginationAsync(int page, int pageSize);
         Task<IEnumerable<Quiz>> QuizSearcherByNameAsync(string name);
+        Task<IEnumerable<Quiz>> FilterQuizesByCategoriesAsync(params string[] categories);
+        Task<(IEnumerable<Quiz>, PaginationMetadata)> GetQuizesAsync(
+            string[] categories,
+            string? searchText,
+            int currentPage = 1,
+            int itemsPerPage = 2
+            );
 
         Task<Category> GetCategoryAsync(Guid id);
         Task<Category> AddCategoryAsync(CategoryDTO category);

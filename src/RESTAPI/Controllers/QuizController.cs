@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using QuizGame.Models;
 using QuizGame.Models.DTOs;
+using QuizGame.Models.Utils;
 using QuizGame.Services;
+using System.Text.Json;
+using System.Xml.Linq;
 
 namespace RESTAPI.Controllers
 {
@@ -25,9 +28,17 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpGet]
-        public List<Quiz> GetQuizzes()
+        public async Task<IActionResult> GetQuizzes(
+            int page = 1,
+            int pageSize = 3,
+            string searchText = "",
+            [FromQuery] params string[]? categories
+        )
         {
-            return _services.GenerateQuizzesAsync();
+            var (quizes, paginationMetadata) = await _services
+                .GetQuizesAsync(categories, searchText, page, pageSize);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+            return Ok(quizes);
         }
 
         /// <summary>
@@ -111,7 +122,7 @@ namespace RESTAPI.Controllers
         }
 
         /// <summary>
-        /// Searcher (base on name)
+        /// Searcher (based on name)
         /// </summary>
         /// <param searchText="searchText">The text to search the name of the quiz or quizes</param>
         /// <response code="200">Success response</response>
@@ -128,6 +139,32 @@ namespace RESTAPI.Controllers
 
             var result = await _services.QuizSearcherByNameAsync(searchText);
             return result.Count() != 0 ? Ok(result) : NoContent();
+        }
+
+        //FilterQuizesByCategoriesAsync 
+        /// <summary>
+        /// Filter (based on categories)
+        /// </summary>
+        /// <param categories="Categories Names">The list of selected categories to filter</param>
+        /// <response code="200">Success response</response>
+        /// <response code="400">Bad request response</response>+
+        [HttpGet("filter")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Quiz>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SearchQuizesByName(
+            int page = 1,
+            int pageSize = 3,
+            string searchText = "",
+            [FromQuery] params string[] categories
+            )
+        {
+            if (categories.IsNullOrEmpty())
+                return BadRequest("Please, enter something");
+            
+            var result = await _services.FilterQuizesByCategoriesAsync(categories);
+
+            return result.Count() == 0 ? Ok("Nothing found") : Ok(result);
         }
     }
 }

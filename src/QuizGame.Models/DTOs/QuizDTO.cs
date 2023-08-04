@@ -13,6 +13,7 @@ namespace QuizGame.Models.DTOs
         [Required(ErrorMessage = "You should provide a name value.")]
         [MaxLength(50)]
         public string QuizName { get; set; }
+
         [Required(ErrorMessage = "You should provide a description value.")]
         [MaxLength(100)]
         public string Description { get; set; }
