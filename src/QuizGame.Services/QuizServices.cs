@@ -123,7 +123,6 @@ namespace QuizGame.Services
             await RemoveQuizAsync(id);
             Quiz quizToAdd = parser.ParseToQuiz(quiz);
             _db._quizzes.Add(quizToAdd);
-            await Task.Delay(10);
             return quizToAdd;
         }
 
