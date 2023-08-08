@@ -176,7 +176,7 @@ namespace QuizGame.Services
             if (!string.IsNullOrWhiteSpace(searchText))
             {
                 searchText = searchText.Trim();
-                result = result.Where(q => q.QuizName == searchText);
+                result = result.Where(q => q.QuizName.Contains(searchText));
             }
             if(categories is not null && categories.Length > 0)
             {

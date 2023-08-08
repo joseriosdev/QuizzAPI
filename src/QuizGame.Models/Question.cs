@@ -34,9 +34,16 @@ namespace QuizGame.Models
             Score = score;
             QuizAssigned = quizAssigned;
         }
-        public Question()
+        public Question(Guid quizzAssigned)
         {
+            Id = Guid.NewGuid();
+            Text = "Generic question";
+            QuizAssigned = quizzAssigned;
+            CorrectAnswer = "Some";
+            Score = 1;
         }
+
+        public Question() { }
 
         public override string ToString()
         {

@@ -32,9 +32,10 @@ namespace RESTAPI.Controllers
         /// </summary>
         /// <returns>A list of quizzes</returns>
         /// <response code="200">Success response</response>
-        /// <response code="400">Bad request response</response>
+        /// <response code="204">No Content</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Quiz>))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetQuizzes(
             [FromQuery] string[] categories,
             int page = 1,
@@ -45,7 +46,7 @@ namespace RESTAPI.Controllers
             var (quizes, paginationMetadata) = await _services
                 .GetQuizesAsync(categories, searchText, page, pageSize);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
-            return Ok(quizes);
+            return quizes.Count() == 0 ? NoContent() : Ok(quizes);
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace RESTAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Quiz))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> PostQuestion([FromBody] QuizDTO quiz)
+        public async Task<IActionResult> PostQuiz([FromBody] QuizDTO quiz)
         {
             if(quiz is null)
                 return BadRequest("Please, send a correct body");

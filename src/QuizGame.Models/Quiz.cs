@@ -24,9 +24,9 @@ namespace QuizGame.Models
 
             Id = Guid.NewGuid();
             QuizName = quizName;
-            Description = quizNames[RandomInt(quizNames.Length - 1)] + " is the description part." + quizNames[RandomInt(quizNames.Length - 1)];
+            Description = quizNames[RandomInt(quizNames.Length - 1)] + " is the description part. " + quizNames[RandomInt(quizNames.Length - 1)];
             Categories = new List<Category>();
-            questions = new List<Question>();
+            questions = new List<Question>() { new Question(this.Id) };
         }
 
         public Quiz(string quizName, string description, List<Category> categories, List<Question> questionsList) 
