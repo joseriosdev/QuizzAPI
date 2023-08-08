@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using QuizGame.Services;
 using QuizGame.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RESTAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class QuestionController : ControllerBase
     {

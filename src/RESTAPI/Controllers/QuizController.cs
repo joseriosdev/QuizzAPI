@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizGame.Models;
 using QuizGame.Models.DTOs;
@@ -7,6 +8,7 @@ using QuizGame.Services;
 namespace RESTAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class QuizController : ControllerBase
     {

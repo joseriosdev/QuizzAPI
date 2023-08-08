@@ -7,8 +7,8 @@ using System.Collections.Generic;
 
 namespace RESTAPI.Controllers
 {
-    //[Authorize]
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class CategoryController
     {

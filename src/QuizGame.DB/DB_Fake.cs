@@ -72,7 +72,8 @@ namespace QuizGame.DB
 
         public List<User> _users = new List<User>
         {
-            new User(Guid.NewGuid(), "admin", "admin@mail.com", "123456")
+            new User(Guid.NewGuid(), "admin", "admin@mail.com", "123456"),
+            new User(Guid.NewGuid(), "luis", "luis@mail.com", "123456")
         };
     }
 }

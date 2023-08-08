@@ -84,6 +84,15 @@ namespace RESTAPI
                 }
                 );
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("MustHaveAuthorization", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("email", "admin@mail.com");
+                });
+            });
+
             services.AddHttpClient();
 
             services.AddCors(options =>
@@ -133,8 +142,8 @@ namespace RESTAPI
 
             app.UseResponseCompression();
             app.UseRouting();
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
