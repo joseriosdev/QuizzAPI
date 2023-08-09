@@ -1,14 +1,57 @@
 {
 	"info": {
-		"_postman_id": "759f4f7e-bc30-4304-8ba0-585c4272722e",
+		"_postman_id": "e2edcc51-9bbd-4de6-aab9-601547b81447",
 		"name": "QuizzAPP-API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "19860668"
+		"_exporter_id": "22952540"
 	},
 	"item": [
 		{
 			"name": "TestingQuizCtrl",
 			"item": [
+				{
+					"name": "Authorization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"var responseData = pm.response.text();\r",
+									"\r",
+									"pm.environment.set('TOKEN', responseData);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userName\": \"luis@mail.com\",\r\n  \"password\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}authentication/authenticate",
+							"host": [
+								"{{URL}}authentication"
+							],
+							"path": [
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "PaginationTest",
 					"event": [
@@ -32,6 +75,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -76,6 +129,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -118,6 +181,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -166,7 +239,14 @@
 					],
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "GET",
 						"header": [],
@@ -207,7 +287,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItRHM3aHdxa3FTb1JFNVd5NzhzWEI3Z0x6Zi1JSlhyQXc5Y0ZJNnMzUHkwIn0.eyJleHAiOjE2OTA4NjczNDIsImlhdCI6MTY5MDg2NzA0MiwiYXV0aF90aW1lIjoxNjkwODY3MDM5LCJqdGkiOiJkM2MxMTMzYi03ODcyLTQ3ZjItODQ3NS1iYmFhY2FhM2QyNTIiLCJpc3MiOiJodHRwczovL2F1dGguc2VzLXVuaXQuY29tL2F1dGgvcmVhbG1zL2xvY2FsIiwiYXVkIjpbImFjdGlvLXdlYmFwcCIsImFjY291bnQiXSwic3ViIjoiYWRmNTM1NDctZGQ4Mi00NTQ5LWJhODEtMmU1NGZmNDgwMGFmIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiYWN0aW8td2ViYXBwIiwibm9uY2UiOiIyNWEyOGExMC04YjQ1LTQyODktOTFmOS1mYjgzYWU1NWYxYzMiLCJzZXNzaW9uX3N0YXRlIjoiNWU4ODRiYTItMmYzZC00ZTEzLWJhNDAtZjU0MWExMGYzY2MwIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjMwMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLWxvY2FsIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWN0aW8td2ViYXBwIjp7InJvbGVzIjpbIlZpZXdlciIsIkFkbWluIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIFVzZXIuUmVhZCBlbWFpbCIsInNpZCI6IjVlODg0YmEyLTJmM2QtNGUxMy1iYTQwLWY1NDFhMTBmM2NjMCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6Ikpvc2UgRGFuaWVsIFLDrW9zIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiam9zZXJ1ZGUucmlvczk3QGdtYWlsLmNvbSIsImdpdmVuX25hbWUiOiJKb3NlIERhbmllbCIsImZhbWlseV9uYW1lIjoiUsOtb3MiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUFjSFR0ZGxUTUlDczcxR0ZOaU5rNE1Wdm5WMVNlbVpYU3k1cXplLVdBNU5kMlVENHc9czk2LWMiLCJlbWFpbCI6Impvc2VydWRlLnJpb3M5N0BnbWFpbC5jb20ifQ.AN1k4GKxxDUSmfIfhmQomhkZN1BlFE8ve7hW7Y5GfuE43zhzXyvnH7HWahaK0qPkQtjdkJw33vW8eMOGoRJ3NPdiDwBnPq_QK3uYaAOhXgcEqp-2penuCXY6SEPG4JTV5XXo8Bvb_bYJYa14qK7rSEV8HETBCI3jP2rT9O1WxCSrS4vq4_2QzSTD-dpRtPUrVXjL0DaWfsP_1TQUdk0ShrykeXu6xfWOpR06FMJ9GMyHcQAzFJ-wE-enPWfLAz8SdejCTcjA97bFk_tdOMcvB2iYr-Jq4wR1ix76NVVnD21mqmUmegkrTVfVxxnxU7na4sywdntj6Sh9Aol047y61g",
+									"value": "{{TOKEN}}",
 									"type": "string"
 								}
 							]
@@ -252,6 +332,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
@@ -304,7 +394,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItRHM3aHdxa3FTb1JFNVd5NzhzWEI3Z0x6Zi1JSlhyQXc5Y0ZJNnMzUHkwIn0.eyJleHAiOjE2OTA4NjczNDIsImlhdCI6MTY5MDg2NzA0MiwiYXV0aF90aW1lIjoxNjkwODY3MDM5LCJqdGkiOiJkM2MxMTMzYi03ODcyLTQ3ZjItODQ3NS1iYmFhY2FhM2QyNTIiLCJpc3MiOiJodHRwczovL2F1dGguc2VzLXVuaXQuY29tL2F1dGgvcmVhbG1zL2xvY2FsIiwiYXVkIjpbImFjdGlvLXdlYmFwcCIsImFjY291bnQiXSwic3ViIjoiYWRmNTM1NDctZGQ4Mi00NTQ5LWJhODEtMmU1NGZmNDgwMGFmIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiYWN0aW8td2ViYXBwIiwibm9uY2UiOiIyNWEyOGExMC04YjQ1LTQyODktOTFmOS1mYjgzYWU1NWYxYzMiLCJzZXNzaW9uX3N0YXRlIjoiNWU4ODRiYTItMmYzZC00ZTEzLWJhNDAtZjU0MWExMGYzY2MwIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjMwMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLWxvY2FsIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWN0aW8td2ViYXBwIjp7InJvbGVzIjpbIlZpZXdlciIsIkFkbWluIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIFVzZXIuUmVhZCBlbWFpbCIsInNpZCI6IjVlODg0YmEyLTJmM2QtNGUxMy1iYTQwLWY1NDFhMTBmM2NjMCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6Ikpvc2UgRGFuaWVsIFLDrW9zIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiam9zZXJ1ZGUucmlvczk3QGdtYWlsLmNvbSIsImdpdmVuX25hbWUiOiJKb3NlIERhbmllbCIsImZhbWlseV9uYW1lIjoiUsOtb3MiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUFjSFR0ZGxUTUlDczcxR0ZOaU5rNE1Wdm5WMVNlbVpYU3k1cXplLVdBNU5kMlVENHc9czk2LWMiLCJlbWFpbCI6Impvc2VydWRlLnJpb3M5N0BnbWFpbC5jb20ifQ.AN1k4GKxxDUSmfIfhmQomhkZN1BlFE8ve7hW7Y5GfuE43zhzXyvnH7HWahaK0qPkQtjdkJw33vW8eMOGoRJ3NPdiDwBnPq_QK3uYaAOhXgcEqp-2penuCXY6SEPG4JTV5XXo8Bvb_bYJYa14qK7rSEV8HETBCI3jP2rT9O1WxCSrS4vq4_2QzSTD-dpRtPUrVXjL0DaWfsP_1TQUdk0ShrykeXu6xfWOpR06FMJ9GMyHcQAzFJ-wE-enPWfLAz8SdejCTcjA97bFk_tdOMcvB2iYr-Jq4wR1ix76NVVnD21mqmUmegkrTVfVxxnxU7na4sywdntj6Sh9Aol047y61g",
+									"value": "{{TOKEN}}",
 									"type": "string"
 								}
 							]
@@ -345,6 +435,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -381,6 +481,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -411,6 +521,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
