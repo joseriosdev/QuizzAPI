@@ -9,13 +9,14 @@ namespace QuizGame.Models.DTOs
 {
     public class QuizDTO
     {
-        public string Id { get; set; }
+        public string? Id { get; set; }
         [Required(ErrorMessage = "You should provide a name value.")]
         [MaxLength(50)]
-        public string QuizName { get; set; }
+        public string? QuizName { get; set; }
+
         [Required(ErrorMessage = "You should provide a description value.")]
         [MaxLength(100)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public List<Category> Categories { get; set; } = new List<Category>();
         [MinLength(1, ErrorMessage = "You should provide at least 1 question")]
         public List<Question> questions { get; set; } = new List<Question>();

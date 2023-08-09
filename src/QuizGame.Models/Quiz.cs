@@ -10,12 +10,24 @@ namespace QuizGame.Models
 {
     public class Quiz
     {
+        private static readonly Random random = new Random();
         public Guid Id { get; set; }
         public string QuizName { get; set; }
         public string Description { get; set; }
         public List<Category> Categories { get; set; } = new List<Category>();
         public List<Question> questions { get; set; } = new List<Question>();
 
+        public Quiz()
+        {
+            string[] quizNames = new string[] {"Abra kadabra", "Sesamo", "Bookshell", "Aww!", "QuizzApp" };
+            string quizName = quizNames[RandomInt(quizNames.Length-1)];
+
+            Id = Guid.NewGuid();
+            QuizName = quizName;
+            Description = quizNames[RandomInt(quizNames.Length - 1)] + " is the description part. " + quizNames[RandomInt(quizNames.Length - 1)];
+            Categories = new List<Category>();
+            questions = new List<Question>() { new Question(this.Id) };
+        }
 
         public Quiz(string quizName, string description, List<Category> categories, List<Question> questionsList) 
         {
@@ -48,6 +60,13 @@ namespace QuizGame.Models
         public override int GetHashCode()
         {
             return HashCode.Combine(Id, QuizName, Description, Categories, questions);
+        }
+
+        private int RandomInt(int max)
+        {
+            int range = max + 1;
+            int randomNumber = random.Next(range);
+            return randomNumber;
         }
     }
 }

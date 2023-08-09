@@ -1,12 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using QuizGame.Models;
 using QuizGame.Models.DTOs;
+using QuizGame.Models.Utils;
 using QuizGame.Services;
+using System.Text.Json;
+using System.Xml.Linq;
 
 namespace RESTAPI.Controllers
 {
+    /// <summary>
+    /// Quiz Controller
+    /// </summary>
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
@@ -14,6 +21,9 @@ namespace RESTAPI.Controllers
     {
         private readonly IQuizServices _services;
 
+        /// <summary>
+        /// Quiz Controller Constructor
+        /// </summary>
         public QuizController(IQuizServices services)
         {
             _services = services ?? throw new ArgumentNullException(nameof(services));
@@ -24,11 +34,21 @@ namespace RESTAPI.Controllers
         /// </summary>
         /// <returns>A list of quizzes</returns>
         /// <response code="200">Success response</response>
-        /// <response code="400">Bad request response</response>
+        /// <response code="204">No Content</response>
         [HttpGet]
-        public List<Quiz> GetQuizzes()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Quiz>))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> GetQuizzes(
+            [FromQuery] string[] categories,
+            int page = 1,
+            int pageSize = 50,
+            string searchText = ""
+        )
         {
-            return _services.GenerateQuizzesAsync();
+            var (quizes, paginationMetadata) = await _services
+                .GetQuizesAsync(categories, searchText, page, pageSize);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+            return quizes.Count() == 0 ? NoContent() : Ok(quizes);
         }
 
         /// <summary>
@@ -37,11 +57,16 @@ namespace RESTAPI.Controllers
         /// <param name="id">A quiz id</param>
         /// <returns>A quiz</returns>
         /// <response code="200">Success response</response>
-        /// <response code="400">Bad request response</response>
+        /// <response code="404">Not Found response</response>
         [HttpGet("{id}")]
-        public async Task<Quiz> GetQuiz(Guid id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Quiz))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetQuiz(Guid id)
         {
-            return await _services.GetQuizAsync(id);
+            Quiz result = await _services.GetQuizAsync(id);
+            if (result is null)
+                return NotFound();
+            return Ok(result);
         }
 
         /// <summary>
@@ -52,9 +77,15 @@ namespace RESTAPI.Controllers
         /// <response code="200">Success response</response>
         /// <response code="400">Bad request response</response>
         [HttpPost]
-        public async Task<Quiz> PostQuestion([FromBody] QuizDTO quiz)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Quiz))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> PostQuiz([FromBody] QuizDTO quiz)
         {
-            return await _services.AddQuizAsync(quiz);
+            if(quiz is null)
+                return BadRequest("Please, send a correct body");
+
+            Quiz result = await _services.AddQuizAsync(quiz);
+            return Ok(result);
         }
 
         /// <summary>
@@ -62,23 +93,26 @@ namespace RESTAPI.Controllers
         /// </summary>
         /// <param name="idToDelete">A quiz id</param>
         /// <response code="200">Success response</response>
-        /// <response code="400">Bad request response</response>
         [HttpDelete("{idToDelete}")]
-        public void DeleteQuiz(Guid idToDelete)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteQuiz(Guid idToDelete)
         {
-            _services.RemoveQuizAsync(idToDelete);
+            await _services.RemoveQuizAsync(idToDelete);
+            return Ok();
         }
 
         /// <summary>
         /// Update a quiz from the database
         /// </summary>
-        /// <param name="id">A quiz id</param>
+        /// <param name="idToUpdate">A quiz id</param>
+        /// <param name="quiz">A quizDTO</param>
         /// <response code="200">Success response</response>
-        /// <response code="400">Bad request response</response>
         [HttpPut("{idToUpdate}")]
-        public void UpdateQuiz(Guid idToUpdate, [FromBody] QuizDTO quiz)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        public async Task<IActionResult> UpdateQuiz(Guid idToUpdate, [FromBody] QuizDTO quiz)
         {
-            _services.UpdateQuizAsync(idToUpdate, quiz);
+            await _services.UpdateQuizAsync(idToUpdate, quiz);
+            return Ok("update successful");
         }
     }
 }

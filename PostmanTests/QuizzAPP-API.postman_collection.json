@@ -1,0 +1,437 @@
+{
+	"info": {
+		"_postman_id": "759f4f7e-bc30-4304-8ba0-585c4272722e",
+		"name": "QuizzAPP-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19860668"
+	},
+	"item": [
+		{
+			"name": "TestingQuizCtrl",
+			"item": [
+				{
+					"name": "PaginationTest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"var responseData = pm.response.json();\r",
+									"var pageSizeQueryParam = 3;\r",
+									"\r",
+									"pm.test(\"Should have 3 Items due to pagination\", () => {\r",
+									"    pm.expect(responseData.length).to.eql(pageSizeQueryParam);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}Quiz?page=1&pageSize=3",
+							"host": [
+								"{{URL}}Quiz"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TestingSearcher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"var responseData = pm.response.json();\r",
+									"var expected = 'World War II Quizz';\r",
+									"\r",
+									"pm.test(\"Quiz Name should be \" + expected, () => {\r",
+									"    pm.expect(responseData[0].quizName).to.eql(expected);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}Quiz?searchText=World War II Quizz",
+							"host": [
+								"{{URL}}Quiz"
+							],
+							"query": [
+								{
+									"key": "searchText",
+									"value": "World War II Quizz"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "NoContent-PaginationTest",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}Quiz?page=213&pageSize=5",
+							"host": [
+								"{{URL}}Quiz"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "213"
+								},
+								{
+									"key": "pageSize",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFirstQuiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"var responseData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response data is not empty\", function () {\r",
+									"    pm.expect(Array.isArray(responseData) && responseData.length > 0).to.be.true;\r",
+									"});\r",
+									"\r",
+									"var firstQuiz = responseData[0];\r",
+									"\r",
+									"pm.environment.set('QUIZ_ID', firstQuiz.id);\r",
+									"pm.environment.set('QUIZ', JSON.stringify(firstQuiz));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}Quiz",
+							"host": [
+								"{{URL}}Quiz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSingleQuiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"var responseData = pm.response.json();\r",
+									"var newQuizName = pm.environment.get('GENERIC_NAME');\r",
+									"\r",
+									"responseData.quizName = newQuizName;\r",
+									"\r",
+									"pm.environment.set('QUIZ', JSON.stringify(responseData));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItRHM3aHdxa3FTb1JFNVd5NzhzWEI3Z0x6Zi1JSlhyQXc5Y0ZJNnMzUHkwIn0.eyJleHAiOjE2OTA4NjczNDIsImlhdCI6MTY5MDg2NzA0MiwiYXV0aF90aW1lIjoxNjkwODY3MDM5LCJqdGkiOiJkM2MxMTMzYi03ODcyLTQ3ZjItODQ3NS1iYmFhY2FhM2QyNTIiLCJpc3MiOiJodHRwczovL2F1dGguc2VzLXVuaXQuY29tL2F1dGgvcmVhbG1zL2xvY2FsIiwiYXVkIjpbImFjdGlvLXdlYmFwcCIsImFjY291bnQiXSwic3ViIjoiYWRmNTM1NDctZGQ4Mi00NTQ5LWJhODEtMmU1NGZmNDgwMGFmIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiYWN0aW8td2ViYXBwIiwibm9uY2UiOiIyNWEyOGExMC04YjQ1LTQyODktOTFmOS1mYjgzYWU1NWYxYzMiLCJzZXNzaW9uX3N0YXRlIjoiNWU4ODRiYTItMmYzZC00ZTEzLWJhNDAtZjU0MWExMGYzY2MwIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjMwMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLWxvY2FsIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWN0aW8td2ViYXBwIjp7InJvbGVzIjpbIlZpZXdlciIsIkFkbWluIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIFVzZXIuUmVhZCBlbWFpbCIsInNpZCI6IjVlODg0YmEyLTJmM2QtNGUxMy1iYTQwLWY1NDFhMTBmM2NjMCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6Ikpvc2UgRGFuaWVsIFLDrW9zIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiam9zZXJ1ZGUucmlvczk3QGdtYWlsLmNvbSIsImdpdmVuX25hbWUiOiJKb3NlIERhbmllbCIsImZhbWlseV9uYW1lIjoiUsOtb3MiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUFjSFR0ZGxUTUlDczcxR0ZOaU5rNE1Wdm5WMVNlbVpYU3k1cXplLVdBNU5kMlVENHc9czk2LWMiLCJlbWFpbCI6Impvc2VydWRlLnJpb3M5N0BnbWFpbC5jb20ifQ.AN1k4GKxxDUSmfIfhmQomhkZN1BlFE8ve7hW7Y5GfuE43zhzXyvnH7HWahaK0qPkQtjdkJw33vW8eMOGoRJ3NPdiDwBnPq_QK3uYaAOhXgcEqp-2penuCXY6SEPG4JTV5XXo8Bvb_bYJYa14qK7rSEV8HETBCI3jP2rT9O1WxCSrS4vq4_2QzSTD-dpRtPUrVXjL0DaWfsP_1TQUdk0ShrykeXu6xfWOpR06FMJ9GMyHcQAzFJ-wE-enPWfLAz8SdejCTcjA97bFk_tdOMcvB2iYr-Jq4wR1ix76NVVnD21mqmUmegkrTVfVxxnxU7na4sywdntj6Sh9Aol047y61g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}Quiz/{{QUIZ_ID}}",
+							"host": [
+								"{{URL}}Quiz"
+							],
+							"path": [
+								"{{QUIZ_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Quiz Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{QUIZ}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}Quiz/{{QUIZ_ID}}",
+							"host": [
+								"{{URL}}Quiz"
+							],
+							"path": [
+								"{{QUIZ_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSingleQuiz - compare quizName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"var responseData = pm.response.json();\r",
+									"var newQuizName = pm.environment.get('GENERIC_NAME');\r",
+									"\r",
+									"pm.test(\"Should have updated the name\", () => {\r",
+									"    pm.expect(responseData.quizName).to.eql(newQuizName);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItRHM3aHdxa3FTb1JFNVd5NzhzWEI3Z0x6Zi1JSlhyQXc5Y0ZJNnMzUHkwIn0.eyJleHAiOjE2OTA4NjczNDIsImlhdCI6MTY5MDg2NzA0MiwiYXV0aF90aW1lIjoxNjkwODY3MDM5LCJqdGkiOiJkM2MxMTMzYi03ODcyLTQ3ZjItODQ3NS1iYmFhY2FhM2QyNTIiLCJpc3MiOiJodHRwczovL2F1dGguc2VzLXVuaXQuY29tL2F1dGgvcmVhbG1zL2xvY2FsIiwiYXVkIjpbImFjdGlvLXdlYmFwcCIsImFjY291bnQiXSwic3ViIjoiYWRmNTM1NDctZGQ4Mi00NTQ5LWJhODEtMmU1NGZmNDgwMGFmIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiYWN0aW8td2ViYXBwIiwibm9uY2UiOiIyNWEyOGExMC04YjQ1LTQyODktOTFmOS1mYjgzYWU1NWYxYzMiLCJzZXNzaW9uX3N0YXRlIjoiNWU4ODRiYTItMmYzZC00ZTEzLWJhNDAtZjU0MWExMGYzY2MwIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjMwMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLWxvY2FsIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWN0aW8td2ViYXBwIjp7InJvbGVzIjpbIlZpZXdlciIsIkFkbWluIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIFVzZXIuUmVhZCBlbWFpbCIsInNpZCI6IjVlODg0YmEyLTJmM2QtNGUxMy1iYTQwLWY1NDFhMTBmM2NjMCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6Ikpvc2UgRGFuaWVsIFLDrW9zIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiam9zZXJ1ZGUucmlvczk3QGdtYWlsLmNvbSIsImdpdmVuX25hbWUiOiJKb3NlIERhbmllbCIsImZhbWlseV9uYW1lIjoiUsOtb3MiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUFjSFR0ZGxUTUlDczcxR0ZOaU5rNE1Wdm5WMVNlbVpYU3k1cXplLVdBNU5kMlVENHc9czk2LWMiLCJlbWFpbCI6Impvc2VydWRlLnJpb3M5N0BnbWFpbC5jb20ifQ.AN1k4GKxxDUSmfIfhmQomhkZN1BlFE8ve7hW7Y5GfuE43zhzXyvnH7HWahaK0qPkQtjdkJw33vW8eMOGoRJ3NPdiDwBnPq_QK3uYaAOhXgcEqp-2penuCXY6SEPG4JTV5XXo8Bvb_bYJYa14qK7rSEV8HETBCI3jP2rT9O1WxCSrS4vq4_2QzSTD-dpRtPUrVXjL0DaWfsP_1TQUdk0ShrykeXu6xfWOpR06FMJ9GMyHcQAzFJ-wE-enPWfLAz8SdejCTcjA97bFk_tdOMcvB2iYr-Jq4wR1ix76NVVnD21mqmUmegkrTVfVxxnxU7na4sywdntj6Sh9Aol047y61g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}Quiz/{{QUIZ_ID}}",
+							"host": [
+								"{{URL}}Quiz"
+							],
+							"path": [
+								"{{QUIZ_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreatingQuiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"var responseData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Verifying Quiz Name\", () => {\r",
+									"    pm.expect(responseData.quizName).to.eql(\"string\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": \"string\",\r\n  \"quizName\": \"string\",\r\n  \"description\": \"string\",\r\n  \"categories\": [\r\n    {\r\n      \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n      \"name\": \"string\"\r\n    }\r\n  ],\r\n  \"questions\": [\r\n    {\r\n      \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n      \"text\": \"string\",\r\n      \"correctAnswer\": \"string\",\r\n      \"score\": 2147483647,\r\n      \"quizAssigned\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}Quiz",
+							"host": [
+								"{{URL}}Quiz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletingQuiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}Quiz/{{QUIZ_ID}}",
+							"host": [
+								"{{URL}}Quiz"
+							],
+							"path": [
+								"{{QUIZ_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CheckIfDeleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}Quiz/{{QUIZ_ID}}",
+							"host": [
+								"{{URL}}Quiz"
+							],
+							"path": [
+								"{{QUIZ_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "QUIZ_ID",
+			"value": ""
+		}
+	]
+}

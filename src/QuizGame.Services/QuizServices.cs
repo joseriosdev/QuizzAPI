@@ -2,6 +2,8 @@
 using QuizGame.Models;
 using QuizGame.Models.DTOs;
 using QuizGame.Models.Utils;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace QuizGame.Services
 {
@@ -11,6 +13,7 @@ namespace QuizGame.Services
         public Parser parser = new Parser();
         public async Task<IEnumerable<Category>> GenerateCategoriesAsync()
         {
+            await Task.Delay(10);
             return _db._categories;
         }
 
@@ -21,7 +24,7 @@ namespace QuizGame.Services
             return _db._questions;
         }
 
-        public async Task<Question> GetQuestionAsync(Guid id)
+        public async Task<Question?> GetQuestionAsync(Guid? id)
         {
             await Task.Delay(10);
             var question = _db._questions.Where(questions => questions.Id == id).FirstOrDefault();
@@ -46,7 +49,7 @@ namespace QuizGame.Services
                 {
                     quiz.questions.RemoveAll(obj => obj.Id == id);
                     QuizDTO quizToUpdate = parser.ParseToQuizDTO(quiz);
-                    UpdateQuizAsync(quiz.Id, quizToUpdate);
+                    await UpdateQuizAsync(quiz.Id, quizToUpdate);
                 }
             }
             await Task.Delay(10);
@@ -68,7 +71,7 @@ namespace QuizGame.Services
                     newQuestions.Add(question);
                     quiz.questions = newQuestions;
                     QuizDTO quizToUpdate = parser.ParseToQuizDTO(quiz);
-                    UpdateQuizAsync(quiz.Id, quizToUpdate);
+                    await UpdateQuizAsync(quiz.Id, quizToUpdate);
                 }
             }
             await Task.Delay(10);
@@ -82,14 +85,16 @@ namespace QuizGame.Services
             return _db._quizzes;
         }
 
-        public async Task<Quiz> GetQuizAsync(Guid id)
+        public async Task<Quiz?> GetQuizAsync(Guid? id)
         {
             await Task.Delay(10);
-            return _db._quizzes.Where(quizzes => quizzes.Id == id).FirstOrDefault();
+            Quiz? result = _db._quizzes.Where(quizzes => quizzes.Id == id).FirstOrDefault();
+            return result;
         }
 
         public async Task<Quiz> AddQuizAsync(QuizDTO quiz)
         {
+            quiz.Id = Guid.NewGuid().ToString();
             Quiz quizToAdd = parser.ParseToQuiz(quiz);
             _db._quizzes.Add(quizToAdd);
             await Task.Delay(10);
@@ -106,8 +111,8 @@ namespace QuizGame.Services
                 foreach (Question question in questions)
                 {
                     question.QuizAssigned = null;
-                    RemoveQuestionAsync(question.Id);
-                    AddQuestionAsync(question);
+                    await RemoveQuestionAsync(question.Id);
+                    await AddQuestionAsync(question);
                 }
             }
             return true;
@@ -115,11 +120,80 @@ namespace QuizGame.Services
 
         public async Task<Quiz> UpdateQuizAsync(Guid id, QuizDTO quiz)
         {
-            RemoveQuizAsync(id);
+            await RemoveQuizAsync(id);
             Quiz quizToAdd = parser.ParseToQuiz(quiz);
             _db._quizzes.Add(quizToAdd);
-            await Task.Delay(10);
             return quizToAdd;
+        }
+
+        public async Task<IEnumerable<Quiz>> HandlePaginationAsync(int page, int pageSize)
+        {
+            await Task.Delay(10);
+            int currentQuizCountInDB = _db._quizzes.Count;
+            int maxNumberOfPages = (int)Math.Ceiling((decimal)currentQuizCountInDB / (decimal)pageSize);
+            
+            if(maxNumberOfPages == 1)
+            {
+                return _db._quizzes;
+            }
+
+            IEnumerable<Quiz> itemsInPage = _db._quizzes
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+
+            if (itemsInPage.Count() == 0)
+                throw new Exception("Not Found");
+
+            return itemsInPage;
+        }
+
+        public async Task<IEnumerable<Quiz>> QuizSearcherByNameAsync(string name)
+        {
+            IEnumerable<Quiz> result = _db._quizzes.Where(quiz => quiz.QuizName.Contains(name));
+            await Task.Delay(10);
+            return result;
+        }
+
+        public async Task<IEnumerable<Quiz>> FilterQuizesByCategoriesAsync(params string[] categories)
+        {
+            IEnumerable<Quiz> result = _db._quizzes
+                .Where(q => q.Categories
+                    .Any(c => categories.Contains(c.Name))
+                );
+            await Task.Delay(10);
+            return result;
+        }
+
+        public async Task<(IEnumerable<Quiz>, PaginationMetadata)> GetQuizesAsync(
+            string[]? categories,
+            string? searchText,
+            int currentPage = 1,
+            int itemsPerPage = 50
+            )
+        {
+            await Task.Delay(10);
+            IEnumerable<Quiz> result = _db._quizzes;
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                searchText = searchText.Trim();
+                result = result.Where(q => q.QuizName.Contains(searchText));
+            }
+            if(categories is not null && categories.Length > 0)
+            {
+                result = result
+                .Where(q => q.Categories
+                    .Any(c => categories.Contains(c.Name))
+                );
+            }
+
+            int totalItemCount = result.Count();
+            var paginationMetadata = new PaginationMetadata(
+                totalItemCount, itemsPerPage, currentPage);
+            result = result
+                .Skip((currentPage - 1) * itemsPerPage)
+                .Take(itemsPerPage);
+
+            return (result, paginationMetadata);
         }
 
         //CATEGORIES
